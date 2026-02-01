@@ -133,7 +133,7 @@ body {
     font-size: 20px;
     font-weight: bold;
     transform: rotate(45deg);
-    z-index: 2; 
+    z-index: 2;
 }
 #yesBtn::before,
 #yesBtn::after {
@@ -196,9 +196,7 @@ for(let i=0;i<30;i++){
 <div class="candle" style="left:20%;"><div class="flame"></div></div>
 <div class="candle" style="left:75%;"><div class="flame"></div></div>
 
-<audio id="bgMusic" loop>
-    <source src="music.mp3" type="audio/mpeg">
-</audio>
+<audio id="bgMusic" src="music.mp3" loop></audio>
 
 <div class="screen active" id="screen1">
     <div class="envelope" onclick="startExperience()">💌</div>
@@ -312,10 +310,17 @@ function startExperience() {
     letter.style.display = "block";
     letter.classList.add("show");
     typeText();
-
     music.volume = 0.5;
-    music.play().catch(()=>console.log("Music blocked; waiting for user interaction"));
+    music.play();
 }
+
+document.addEventListener("click", function () {
+    if (music.paused) {
+        music.volume = 0.5;
+        music.play();
+    }
+}, { once: true });
+
 const noBtn = document.getElementById("noBtn");
 let noScale = 1;
 function moveNoButton() {
@@ -352,7 +357,9 @@ document.addEventListener("keydown",(e)=>{
     if(playerPos===goalPos) goToScreen(5);
 });
 
-function openGift(){document.getElementById("creds").style.display="block";}
+function openGift(){
+    document.getElementById("creds").style.display="block";
+}
 </script>
 
 </body>

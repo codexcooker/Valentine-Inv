@@ -8,7 +8,7 @@
 * { box-sizing: border-box; }
 body {
     margin: 0;
-    font-family: Georgia, serif;
+    font-family: 'Georgia', serif;
     color: #fff;
     height: 100vh;
     overflow: hidden;
@@ -31,6 +31,7 @@ body {
         rgba(192,192,192,0.15) 20px,
         rgba(192,192,192,0.15) 40px
     );
+    z-index: 0;
 }
 
 .balloon {
@@ -40,24 +41,23 @@ body {
     height: 80px;
     border-radius: 50%;
     animation: floatUp 20s linear infinite;
+    opacity: 0.9;
 }
 .balloon.pink { background: radial-gradient(circle at 30% 30%, #ffd1dc, #ff5c8a); }
 .balloon.silver { background: radial-gradient(circle at 30% 30%, #f5f5f5, #aaa); }
-
-@keyframes floatUp {
-    to { transform: translateY(-120vh); }
-}
+@keyframes floatUp { 0% { transform: translateY(0); } 100% { transform: translateY(-120vh); } }
 
 .bubble {
     position: absolute;
     bottom: -50px;
+    width: 20px;
+    height: 20px;
     border: 1px solid rgba(255,255,255,0.4);
     border-radius: 50%;
     animation: bubbleUp 15s linear infinite;
+    opacity: 0.5;
 }
-@keyframes bubbleUp {
-    to { transform: translateY(-120vh); }
-}
+@keyframes bubbleUp { from { transform: translateY(0); } to { transform: translateY(-120vh); } }
 
 .candle {
     position: absolute;
@@ -77,9 +77,7 @@ body {
     border-radius: 50%;
     animation: flicker 0.2s infinite alternate;
 }
-@keyframes flicker {
-    to { transform: scale(1.1) rotate(2deg); }
-}
+@keyframes flicker { from { transform: scale(1) rotate(-2deg); } to { transform: scale(1.1) rotate(2deg); } }
 
 .screen { display: none; max-width: 92%; z-index: 5; }
 .screen.active { display: block; }
@@ -89,6 +87,7 @@ body {
     padding: 28px;
     border-radius: 20px;
     backdrop-filter: blur(8px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 }
 
 .envelope {
@@ -99,6 +98,7 @@ body {
 .envelope:hover { transform: scale(1.1); }
 
 .letter {
+    position: relative;
     background: #f5e9d6;
     color: #2b0000;
     border-radius: 8px;
@@ -106,10 +106,13 @@ body {
     max-height: 70vh;
     overflow-y: auto;
     display: none;
+    box-shadow: 0 0 40px rgba(0,0,0,0.6);
 }
-.letter h1 { color: #7a0000; }
+.letter h1 { text-align: center; color: #7a0000; }
 .text { font-size: 18px; line-height: 28px; white-space: pre-wrap; }
-.blood { color: #8b0000; }
+.blood { color: #8b0000; text-shadow: 0 0 5px rgba(139,0,0,0.6); }
+.show { animation: fadeIn 2s forwards; }
+@keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 
 .choices { position: relative; height: 220px; margin-top: 40px; }
 
@@ -117,14 +120,20 @@ body {
     width: 120px;
     height: 120px;
     background: #ff2f6d;
+    position: relative;
     transform: rotate(-45deg);
     border: none;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 #yesBtn span {
-    transform: rotate(45deg);
     color: white;
+    font-size: 20px;
     font-weight: bold;
+    transform: rotate(45deg);
+    z-index: 2;
 }
 #yesBtn::before,
 #yesBtn::after {
@@ -134,66 +143,60 @@ body {
     height: 120px;
     background: #ff2f6d;
     border-radius: 50%;
+    z-index: 1;
 }
-#yesBtn::before { top: -60px; }
-#yesBtn::after { left: 60px; }
+#yesBtn::before { top: -60px; left: 0; }
+#yesBtn::after { left: 60px; top: 0; }
 
 #noBtn {
     position: absolute;
+    border-radius: 50px;
     padding: 12px 28px;
+    font-size: 18px;
     background: #e74c3c;
     color: white;
     border: none;
-    border-radius: 50px;
     cursor: pointer;
+    transition: all 0.2s ease;
 }
 
-#game {
-    display: grid;
-    grid-template-columns: repeat(5,60px);
-    gap: 8px;
-    justify-content: center;
-}
-.cell {
-    width: 60px;
-    height: 60px;
-    background: rgba(0,0,0,0.25);
-    border-radius: 12px;
-}
-.player { background: #2ecc71; font-size: 28px; }
-.goal { background: gold; font-size: 28px; }
+#game { display: grid; grid-template-columns: repeat(5,60px); grid-template-rows: repeat(5,60px); gap: 8px; justify-content: center; margin-top: 20px; }
+.cell { width: 60px; height: 60px; background: rgba(0,0,0,0.25); border-radius: 12px; }
+.player { background: #2ecc71; display: flex; align-items: center; justify-content: center; font-size: 28px; }
+.goal { background: gold; display: flex; align-items: center; justify-content: center; font-size: 28px; }
 
-.gift { font-size: 120px; cursor: pointer; }
+.gift { font-size: 120px; cursor: pointer; transition: transform 0.25s; }
+.gift:hover { transform: scale(1.1); }
 
-.credentials {
-    background: rgba(0,0,0,0.3);
-    padding: 20px;
-    border-radius: 15px;
-    display: none;
-}
+.credentials { background: rgba(0,0,0,0.3); padding: 20px; border-radius: 15px; margin-top: 20px; word-break: break-all; }
+.final-message { margin-top: 20px; font-size: 18px; line-height: 1.6; }
 </style>
 </head>
 <body>
 
 <div class="banner"></div>
 
-<div class="balloon pink" style="left:10%"></div>
-<div class="balloon silver" style="left:30%"></div>
-<div class="balloon pink" style="left:60%"></div>
-
-<div class="candle" style="left:20%"><div class="flame"></div></div>
-<div class="candle" style="left:75%"><div class="flame"></div></div>
-
-<audio id="bgMusic" src="music.mp3" loop></audio>
+<div class="balloon pink" style="left:10%; animation-delay:0s;"></div>
+<div class="balloon silver" style="left:25%; animation-delay:5s;"></div>
+<div class="balloon pink" style="left:50%; animation-delay:2s;"></div>
+<div class="balloon silver" style="left:70%; animation-delay:7s;"></div>
+<div class="balloon pink" style="left:85%; animation-delay:3s;"></div>
 
 <script>
-document.addEventListener("click", function startMusic(){
-    const m = document.getElementById("bgMusic");
-    m.volume = 0.5;
-    m.play();
-    document.removeEventListener("click", startMusic);
-});
+for(let i=0;i<30;i++){
+    const b=document.createElement("div");
+    b.className="bubble";
+    b.style.left=Math.random()*100+"%";
+    b.style.animationDelay=(Math.random()*10)+"s";
+    b.style.width=b.style.height=(10+Math.random()*20)+"px";
+    document.body.appendChild(b);
+}
 </script>
+
+<div class="candle" style="left:20%;"><div class="flame"></div></div>
+<div class="candle" style="left:75%;"><div class="flame"></div></div>
+
+<audio id="bgMusic" src="music.mp3" loop></audio>
 
 <div class="screen active" id="screen1">
     <div class="envelope" onclick="startExperience()">💌</div>
@@ -221,6 +224,7 @@ document.addEventListener("click", function startMusic(){
 <div class="screen" id="screen4">
     <div class="card">
         <h1>One small challenge 😏</h1>
+        <p>Guide the heart ❤️ to the star ⭐ using arrow keys</p>
         <div id="game"></div>
     </div>
 </div>
@@ -228,79 +232,129 @@ document.addEventListener("click", function startMusic(){
 <div class="screen" id="screen5">
     <div class="card">
         <h1>You did it 💕</h1>
+        <p>Open your gift 🎁</p>
         <div class="gift" onclick="openGift()">🎁</div>
-        <div class="credentials" id="creds">
-            <p>This is just a small thing compared to what I really want to give you, my time, my effort, my loyalty, and my heart. Happy Valentine’s ❤️</p>
+
+        <div class="credentials" id="creds" style="display:none;">
+            <h3>Your GTA 5 Gift ❤️</h3>
+            <p><strong>Steam Login:</strong> REPLACE_WITH_EMAIL</p>
+            <p><strong>Password:</strong> REPLACE_WITH_PASSWORD</p>
+
+            <div class="final-message">
+                <p>
+                    This is just a small thing compared to what I really want to give you, my time,
+                    my effort, my loyalty, and my heart. Even if we’re far apart, I want you to remember
+                    that you’re never alone in this and you're forever and ever loved by me. I’m always right here, choosing you, every single day.
+                    <br><br>
+                    Happy Valentine’s, my sugarplum❤️
+                </p>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-const textDiv = document.getElementById("text");
 const letter = document.getElementById("letter");
+const textDiv = document.getElementById("text");
+const music = document.getElementById("bgMusic");
 
 const message = `From the moment this envelope opens,
 I want you to know something…
 
-You came into my life quietly
-and somehow became everything.
+Some people enter our lives like seasons.
+Some like storms.
+But you... you came like gravity.
+Quiet. Unavoidable. Permanent.
 
-I choose you.
-In every moment.
-In every lifetime.
+Every version of me before you
+was just a draft.
+Every heartbeat after you
+learned a new meaning.
+
+If love is a wound,
+then I choose to bleed only your name.
+If love is a war,
+then I surrender, every time, only to you.
+
+And if one day the world forgets us,
+I will still remember you
+in the way my soul learned how to breathe again.
+
+This is my promise:
+In every lifetime,
+in every universe,
+in every broken or beautiful version of me
+
+I will find you.
+I will choose you.
+I will love you.
 
 Forever.`;
 
-let i = 0;
-function typeText(){
-    if(i < message.length){
-        textDiv.textContent += message[i++];
+let index = 0;
+function typeText() {
+    if (index < message.length) {
+        textDiv.textContent += message.charAt(index);
+        index++;
         setTimeout(typeText, 40);
     }
 }
 
-function goToScreen(n){
-    document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-    document.getElementById("screen"+n).classList.add("active");
+function goToScreen(n) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen' + n).classList.add('active');
 }
 
-function startExperience(){
+function startExperience() {
     goToScreen(2);
     letter.style.display = "block";
+    letter.classList.add("show");
     typeText();
+    music.volume = 0.5;
+    music.play();
 }
+
+document.addEventListener("click", function () {
+    if (music.paused) {
+        music.volume = 0.5;
+        music.play();
+    }
+}, { once: true });
 
 const noBtn = document.getElementById("noBtn");
-let scale = 1;
-noBtn.addEventListener("mouseenter", ()=>{
-    scale -= 0.1;
-    if(scale <= 0.2){ noBtn.style.display="none"; return; }
-    noBtn.style.transform = `scale(${scale}) translate(${Math.random()*200}px,${Math.random()*100}px)`;
-});
+let noScale = 1;
+function moveNoButton() {
+    const x = Math.random() * 250 - 125;
+    const y = Math.random() * 120 - 60;
+    noScale -= 0.1;
+    if(noScale <= 0.2){ noBtn.style.display="none"; return;}
+    noBtn.style.transform = `translate(${x}px,${y}px) scale(${noScale})`;
+}
+noBtn.addEventListener("mouseenter", moveNoButton);
 
 const game = document.getElementById("game");
-let pos = 0;
-const goal = 24;
-
-function draw(){
-    game.innerHTML="";
+let playerPos = 0;
+const goalPos = 24;
+function drawGame() {
+    game.innerHTML = "";
     for(let i=0;i<25;i++){
-        const d=document.createElement("div");
-        d.className="cell";
-        if(i===pos){ d.classList.add("player"); d.textContent="❤️"; }
-        if(i===goal){ d.classList.add("goal"); d.textContent="⭐"; }
-        game.appendChild(d);
+        const cell=document.createElement("div");
+        cell.className="cell";
+        if(i===playerPos){cell.classList.add("player"); cell.textContent="❤️";}
+        if(i===goalPos){cell.classList.add("goal"); cell.textContent="⭐";}
+        game.appendChild(cell);
     }
 }
-draw();
-
-document.addEventListener("keydown",e=>{
-    if(e.key==="ArrowRight" && pos%5<4) pos++;
-    if(e.key==="ArrowLeft" && pos%5>0) pos--;
-    if(e.key==="ArrowDown" && pos<20) pos+=5;
-    if(e.key==="ArrowUp" && pos>=5) pos-=5;
-    draw();
-    if(pos===goal) goToScreen(5);
+drawGame();
+document.addEventListener("keydown",(e)=>{
+    const row = Math.floor(playerPos/5);
+    const col = playerPos%5;
+    if(e.key==="ArrowUp" && row>0) playerPos-=5;
+    if(e.key==="ArrowDown" && row<4) playerPos+=5;
+    if(e.key==="ArrowLeft" && col>0) playerPos-=1;
+    if(e.key==="ArrowRight" && col<4) playerPos+=1;
+    drawGame();
+    if(playerPos===goalPos) goToScreen(5);
 });
 
 function openGift(){
@@ -310,4 +364,3 @@ function openGift(){
 
 </body>
 </html>
-
